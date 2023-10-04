@@ -2,7 +2,6 @@ import sqlite3
 import requests
 from bs4 import BeautifulSoup
 from bottle import Bottle, run, template, request, redirect, post
-import time
 
 app = Bottle()
 
@@ -28,6 +27,10 @@ class Database:
         self.conn.commit()
     
     def get_all_websites(self):
+        self.cursor.execute("SELECT * FROM websites")
+        return self.cursor.fetchall()
+    
+    def get_websites(self):
         self.cursor.execute("SELECT * FROM websites")
         return self.cursor.fetchall()
     
@@ -72,7 +75,6 @@ def view_websites():
     else:
         return template('view_websites', websites=websites)
 
-
 @app.route('/search', method='POST')
 def search():
     keywords_str = request.forms.get('keywords')
@@ -86,9 +88,14 @@ def search():
             url = website[1]
             counts = website_parser.search_keywords(url, keywords)
             results.append((url, counts))
+        
+        # Сортируем результаты в порядке убывания на основе количества совпадений
+        results.sort(key=lambda x: sum(x[1].values()), reverse=True)
+        
         return template('search_results', results=results)
     else:
         return "Введите ключевые слова для поиска (через запятую)."
+
 
 if __name__ == '__main__':
     database = Database("websites.db")
