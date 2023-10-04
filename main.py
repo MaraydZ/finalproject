@@ -5,7 +5,6 @@ from bottle import Bottle, run, template, request, redirect, post
 
 app = Bottle()
 
-# Класс для работы с базой данных
 class Database:
     def __init__(self, db_name):
         self.conn = sqlite3.connect(db_name)
@@ -35,7 +34,6 @@ class Database:
         return self.cursor.fetchall()
     
 
-# Класс для парсинга сайтов
 class WebsiteParser:
     def __init__(self):
         pass
@@ -89,7 +87,6 @@ def search():
             counts = website_parser.search_keywords(url, keywords)
             results.append((url, counts))
         
-        # Сортируем результаты в порядке убывания на основе количества совпадений
         results.sort(key=lambda x: sum(x[1].values()), reverse=True)
         
         return template('search_results', results=results)

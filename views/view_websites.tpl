@@ -18,8 +18,8 @@
 
         .button-container {
             display: flex;
-            justify-content: space-between; /* Распределить кнопки равномерно */
-            gap: 10px; /* Устанавливаем расстояние между кнопками */
+            justify-content: space-between;
+            gap: 10px;
         }
 
         input[type="text"] {
