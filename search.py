@@ -17,7 +17,7 @@ if response.status_code == 200:
         url_parts = decoded_url.split("\\")
         cleaned_url = url_parts[0]
         cleaned_url = cleaned_url.replace('"', '')
-        if not cleaned_url.startswith(('http://www.w3.org', 'https://www.google.com')) and not cleaned_url.containt('.pdf'):
+        if not cleaned_url.startswith(('http://www.w3.org', 'https://www.google.com', "https://policies.google.com", "https://accounts.google.com", "https://support.google.com")):
             print(cleaned_url)
 else:
     print("error")
