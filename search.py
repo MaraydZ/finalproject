@@ -11,7 +11,7 @@ headers = {
 response = requests.get(url, headers=headers)
 
 if response.status_code == 200:
-    urls = re.findall(r'https?://\S+', response.text)
+    urls = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', response.text)
     for url in urls:
         decoded_url = html.unescape(url)
         url_parts = decoded_url.split("\\")
@@ -21,4 +21,3 @@ if response.status_code == 200:
             print(cleaned_url)
 else:
     print("error")
-
