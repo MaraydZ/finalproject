@@ -69,16 +69,14 @@
     <a href="/">Вернуться на главную страницу</a>
 
     <script>
-        // Функция для переключения темы
         function toggleDarkMode() {
             const body = document.body;
             body.classList.toggle('dark-mode');
         }
 
-        // Проверяем сохраненное значение и устанавливаем режим
         const savedIsDark = localStorage.getItem('isDark');
         if (savedIsDark === 'true') {
-            toggleDarkMode(); // Включаем темный режим, если в файле сохранено true
+            toggleDarkMode();
         }
     </script>
 </body>

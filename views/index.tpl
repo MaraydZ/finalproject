@@ -123,14 +123,13 @@
             const body = document.body;
             body.classList.toggle('dark-mode');
             
-            // Сохранение текущего режима в файл isDark.txt
             const isDark = body.classList.contains('dark-mode');
             localStorage.setItem('isDark', isDark);
         }
 
         const savedIsDark = localStorage.getItem('isDark');
         if (savedIsDark === 'true') {
-            toggleDarkMode(); // Включаем темный режим, если в файле сохранено true
+            toggleDarkMode(); 
         }
     </script>
 </body>
