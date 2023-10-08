@@ -2,49 +2,64 @@
 <html>
 <head>
     <title>Просмотр всех сайтов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         h1 {
             color: #333;
         }
 
-        label {
-            font-weight: bold;
+        ul {
+            list-style-type: none;
+            padding: 0;
         }
 
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
+        li {
+            margin-bottom: 10px;
         }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        a {
+            color: #0099cc;
+            text-decoration: none;
         }
 
-        input[type="submit"] {
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Стили для темной темы */
+        body.dark-mode {
             background-color: #333;
             color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
         }
 
-        input[type="submit"]:hover {
-            background-color: #555;
+        body.dark-mode h1 {
+            color: #fff; 
         }
-    </style>    
+
+        body.dark-mode ul {
+            color: #fff;
+        }
+
+        body.dark-mode li {
+            color: #fff;
+        }
+
+        body.dark-mode a {
+            color: #66b3ff;
+        }
+    </style>
 </head>
 <body>
+    <div class="theme-toggle" onclick="toggleDarkMode()">
+        <i class="fas fa-lightbulb"></i>
+    </div>
+
     <h1>Все добавленные сайты:</h1>
     <ul>
         % for website in websites:
@@ -52,5 +67,19 @@
         % end
     </ul>
     <a href="/">Вернуться на главную страницу</a>
+
+    <script>
+        // Функция для переключения темы
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+        }
+
+        // Проверяем сохраненное значение и устанавливаем режим
+        const savedIsDark = localStorage.getItem('isDark');
+        if (savedIsDark === 'true') {
+            toggleDarkMode(); // Включаем темный режим, если в файле сохранено true
+        }
+    </script>
 </body>
 </html>
