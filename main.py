@@ -19,7 +19,7 @@ class Hello:
 
     def hello(self, value):
         if value == "hello":
-            print("Hello! It's google-like search engine.")
+            print("Hello! It's google or yandex like search engine.")
         else:
             pass
 
