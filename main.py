@@ -1,15 +1,15 @@
 # Main libraries
 from bottle import Bottle, run, template, request, redirect, post 
 import requests
-import re # Not use in version 1.1 
+import re  # Not used in version 1.1 
 import html
 from bs4 import BeautifulSoup
 import sqlite3
 import os
 
-class Loading:
+class AppConfig:
     def config(self):
-        self.adress = "localhost"
+        self.address = "localhost"
         self.port = "8080"
         self.start_web_at_run = True
 
@@ -19,18 +19,18 @@ class Hello:
 
     def hello(self, value):
         if value == "hello":
-            print("Hello! It's google or yandex like search engine.")
+            print("Hello! It's a Google or Yandex-like search engine.")
         else:
             pass
 
-class Preparing:
+class AppRun:
     def __init__(self) -> None:
-        self.loading = Loading()
-        self.loading.config()
+        self.app_config = AppConfig()
+        self.app_config.config()
     
     def start(self):
-        if self.loading.start_web_at_run == True:
-             os.system(f"start http://{self.loading.adress}:{self.loading.port}")
+        if self.app_config.start_web_at_run:
+            os.system(f"start http://{self.app_config.address}:{self.app_config.port}")
         else:
             pass
 
@@ -145,7 +145,6 @@ class YandexSearch:
         }
 
         response = requests.get(url, headers=headers)
-
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             urls = []
@@ -215,7 +214,6 @@ def clear_database():
 def view_websites():
     websites = database.get_all_websites()
     if not websites:
-        # return redirect('/')
         return '<!DOCTYPE html><html><head></head><body><script>alert("База данных пуста!"); location.href = "/"</script></body></html>'
     else:
         return template('view_websites', websites=websites)
@@ -228,7 +226,6 @@ def search():
     if keywords:
         websites = database.get_websites()
         if not websites:
-            # return "База данных пуста. Добавьте сайты для поиска."
             return '<!DOCTYPE html><html><head></head><body><script>alert("База данных пуста. Добавьте сайты для поиска"); location.href = "/"</script></body></html>'
         results = []
 
@@ -254,7 +251,6 @@ def search():
         
         return template('search_results', results=results)
     else:
-        # return "Введите ключевые слова для поиска (через запятую)"
         return '<!DOCTYPE html><html><head></head><body><script>alert("Введите ключевые слова для поиска (через запятую)"); location.href = "/"</script></body></html>'
 
 @app.route('/yasearch', method='POST')
@@ -265,7 +261,6 @@ def yasearch():
     if keywords:
         websites = database.get_websites()
         if not websites:
-            # return "База данных пуста. Добавьте сайты для поиска."
             return '<!DOCTYPE html><html><head></head><body><script>alert("База данных пуста. Добавьте сайты для поиска"); location.href = "/"</script></body></html>'
         results = []
 
@@ -291,7 +286,6 @@ def yasearch():
         
         return template('search_results', results=results)
     else:
-        # return "Введите ключевые слова для поиска (через запятую)"
         return '<!DOCTYPE html><html><head></head><body><script>alert("Введите ключевые слова для поиска (через запятую)"); location.href = "/"</script></body></html>'
 
 if __name__ == '__main__':
@@ -302,8 +296,8 @@ if __name__ == '__main__':
     google_search = GoogleSearch()
     yandex_search = YandexSearch()
     unique_websites = set()
-    Preparing = Preparing()
-    Preparing.start()    
-    loading = Loading()
-    loading.config()
-    run(app, host=loading.adress, port=loading.port)
+    AppRun = AppRun()
+    AppRun.start()    
+    app_config = AppConfig() 
+    app_config.config()
+    run(app, host=app_config.address, port=app_config.port)
