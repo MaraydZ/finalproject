@@ -111,7 +111,10 @@
             <label for="keywords">Введите ключевые слова для поиска (через запятую):</label>
             <input type="text" id="keywords" name="keywords" required>
             <td><div class="button-container">
-                <input type="submit" value="Найти">
+                <input type="submit" value="Найти (Google)">
+            </div></td>
+            <td><div class="button-container">
+                <input type="submit" value="Найти (Yandex)">
             </div></td>
         </form>
         </tr>
@@ -134,3 +137,4 @@
     </script>
 </body>
 </html>
+ 
