@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Поиск информации на сайтах</title>
+    <title>Search engine google</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <style>
         body {
@@ -83,12 +83,12 @@
     </div>
 
     <div>
-        <h1>Поиск информации на сайтах</h1>
+        <h1>Search engine</h1>
         <form action="/add_website" method="post">
-            <label for="url">Введите URL сайта:</label>
-            <input type="text" id="url" name="url" required>
+            <label for="url">Enter the query:</label>
+            <input type="text" id="url" pattern="[^,]*" name="url" required>
             <div class="button-container">
-                <input type="submit" value="Добавить сайт">
+                <input type="submit" value="Add site">
             </div>
         </form>
         <table>
@@ -96,20 +96,20 @@
         <td>
         <form action="/clear_database" method="post">
             <div class="button-container">
-                <input type="submit" value="Очистить базу данных">
+                <input type="submit" value="Clear database">
             </div>
         </form>
         </td>
         <td>
         <form action="/view_websites">
             <div class="button-container">
-                <input type="submit" value="Просмотреть базу данных">
+                <input type="submit" value="Show database">
             </div>
         </form>    
         </td>
         <form action="/search" method="post">
             <td><div class="button-container">
-                <input type="submit" value="Найти (Google)">
+                <input type="submit" value="Search">
             </div></td>
             <!-- <td><div class="button-container">
                 <input type="submit" value="Найти (Yandex)">

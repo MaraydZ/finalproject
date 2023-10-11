@@ -11,7 +11,7 @@ class AppConfig:
     def config(self):
         self.address = "localhost"
         self.port = "8080"
-        self.start_web_at_run = True
+        self.start_web_at_run = False
 
 class Hello:
     def __init__(self) -> None:
@@ -243,6 +243,7 @@ def search():
         if google_results:
             for result_url in google_results:
                 if result_url not in unique_websites:
+                    
                     unique_websites.add(result_url)
                     website_keywords = website_parser.search_keywords(result_url, query_keywords)
                     google_search_instance = GoogleSearch()  
