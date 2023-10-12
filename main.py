@@ -101,9 +101,7 @@ class GoogleSearch:
                     url_parts = decoded_url.split("\\")
                     cleaned_url = url_parts[0]
                     cleaned_url = cleaned_url.replace('"', '')
-                    if not cleaned_url.startswith(('https://www.w3.org', 'https://www.google.com', "https://policies.google.com", "https://accounts.google.com", "https://support.google.com")) \
-                                                    and 'google' not in cleaned_url and 'wiki' not in cleaned_url and not 'wikipedia' in cleaned_url \
-                                                    and not 'yandex' in cleaned_url and not 'youtube' in cleaned_url:
+                    if not cleaned_url.startswith(('https://www.w3.org', 'https://www.google.com', "https://policies.google.com", "https://accounts.google.com", "https://support.google.com")):
                         urls.append(cleaned_url)
             return urls
         return []
