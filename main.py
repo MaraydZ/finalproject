@@ -7,6 +7,13 @@ from bs4 import BeautifulSoup
 import sqlite3
 import os
 import time
+import nltk
+import requests
+from requests.exceptions import RequestException
+from nltk.tokenize import word_tokenize
+from retrying import retry
+import traceback
+nltk.download('punkt')
 
 class AppConfig:
     def config(self):
@@ -70,48 +77,78 @@ class WebsiteParser:
 
     def search_keywords(self, url, keywords):
         print(keywords)
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+        except requests.exceptions.RequestException as e:
+            print(f"Error while fetching Google search results for {url}: {e}")
+            return {keyword: 0 for keyword in keywords}
+
+        print(url)      
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             text = soup.get_text().lower()
             counts = {keyword: text.count(keyword.lower()) for keyword in keywords}
             return counts
+        else:
+            pass
         return {keyword: 0 for keyword in keywords}
+
 
 class GoogleSearch:
     def __init__(self):
         pass
 
     def search(self, query):
-        query = "+".join(query)  # Объединить слова в запрос
+        query = "+".join(query)
         url = f"https://google.com/search?q={query}"
         print(url)
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47"
         }
 
-        response = requests.get(url, headers=headers)
-
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            urls = []
-            for link in soup.find_all('a', href=True):
-                href = link['href']
-                if href.startswith('http') or href.startswith('https'):
-                    decoded_url = html.unescape(href)
-                    url_parts = decoded_url.split("\\")
-                    cleaned_url = url_parts[0]
-                    cleaned_url = cleaned_url.replace('"', '')
-                    if not cleaned_url.startswith(('https://www.w3.org', 'https://www.google.com', "https://policies.google.com", "https://accounts.google.com", "https://support.google.com")) \
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status() 
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
+                urls = []
+                for link in soup.find_all('a', href=True):
+                    href = link['href']
+                    if href.startswith('http') or href.startswith('https'):
+                        decoded_url = html.unescape(href)
+                        url_parts = decoded_url.split("\\")
+                        cleaned_url = url_parts[0]
+                        cleaned_url = cleaned_url.replace('"', '')
+                        if not cleaned_url.startswith(('https://www.w3.org', 'https://www.google.com', "https://policies.google.com", "https://accounts.google.com", "https://support.google.com")) \
                                 and 'google' not in cleaned_url and not 'yandex' in cleaned_url and not 'tiktok' in cleaned_url:
-                        urls.append(cleaned_url)
-            return urls
+                            urls.append(cleaned_url)
+                return urls
+        except requests.exceptions.RequestException as e:
+            print(f"Error while fetching Google search results: {e}")
         return []
+
+    def get_website_text(self, url):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            if response.status_code == 200:
+                return response.text
+        except RequestException as e:
+            print(f"Failed to fetch Google search results for {url}: {e}")
+            traceback.print_exc()  
+        return None
+
     def calculate_score(self, url, keywords):
-        geted = requests.get(url).text
+        geted = self.get_website_text(url)
+        if geted is None:
+            print(f"Skipping {url} - Unable to access the website")
+            return 0
+
+
         soup = BeautifulSoup(geted, 'html.parser')
         score = 0
         scorelol = 0
+
         if url.startswith("https"):
             scorelol += 10
         elif url.startswith("http"):
@@ -123,11 +160,14 @@ class GoogleSearch:
 
         if html_tag and head_tag and body_tag:
             scorelol += 10
+            print(f"+ 10 LOG: {url}")
         else:
             scorelol -= 10
+            print(f"- 10 LOG: {url}")
 
         if not keywords:
             scorelol -= 15
+            print(f"- 15, because don't keyword LOG: {url}")
         else:
             keyword_counts = website_parser.search_keywords(url, keywords)
             total_keyword_count = sum(keyword_counts.values())
@@ -228,23 +268,25 @@ def index():
 @app.route('/search', method='POST')
 def search():
     global unique_websites
-    url = request.forms.get('url')  
-    query_keywords = url.split()  
+    query = request.forms.get('url')  
+    query_keywords = [query]  
+    query_keywords = [word for word in word_tokenize(query) if len(word) > 2] 
+
     results = []
 
     urls = []
     scores = []
 
-    for keyword in query_keywords: 
+    for keyword in query_keywords:
         google_results = google_search.search([keyword])
 
         if google_results:
             for result_url in google_results:
                 if result_url not in unique_websites:
                     unique_websites.add(result_url)
-                    website_keywords = website_parser.search_keywords(result_url, [keyword])
+                    website_keywords = website_parser.search_keywords(result_url, query_keywords)
                     google_search_instance = GoogleSearch()
-                    score = google_search_instance.calculate_score(url=result_url, keywords=[keyword])
+                    score = google_search_instance.calculate_score(url=result_url, keywords=query_keywords)
                     urls.append(result_url)
                     scores.append(score)
 
